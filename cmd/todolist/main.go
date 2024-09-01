@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gofiber/fiber/v2"
+	_ "github.com/plutonska/todolist-go/internal/pkg/databases"
 	"log"
 )
 

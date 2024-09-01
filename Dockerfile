@@ -6,6 +6,8 @@ RUN apk add --no-cache git build-base
 
 RUN go install github.com/air-verse/air@latest
 
+RUN apk add --no-cache sqlite
+
 COPY go.mod go.sum ./
 
 RUN go mod download
