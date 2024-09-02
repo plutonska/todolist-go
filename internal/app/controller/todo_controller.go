@@ -10,6 +10,10 @@ type TodoController struct {
 	TodoService service.TodoService
 }
 
+func NewTodoController(todoService service.TodoService) *TodoController {
+	return &TodoController{TodoService: todoService}
+}
+
 func (c *TodoController) CreateTodo(ctx *fiber.Ctx) error {
 	var todo domain.Todo
 	err := ctx.BodyParser(&todo)
