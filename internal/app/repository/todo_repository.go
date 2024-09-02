@@ -27,11 +27,11 @@ func NewSQLTodoRepository(db *gorm.DB) TodoRepository {
 	return &SQLTodoRepository{DB: db}
 }
 
-func (r SQLTodoRepository) Create(ctx context.Context, todo *domain.Todo) error {
+func (r *SQLTodoRepository) Create(ctx context.Context, todo *domain.Todo) error {
 	return r.DB.WithContext(ctx).Create(todo).Error
 }
 
-func (r SQLTodoRepository) GetById(ctx context.Context, id string) (*domain.Todo, error) {
+func (r *SQLTodoRepository) GetById(ctx context.Context, id string) (*domain.Todo, error) {
 	var todo domain.Todo
 	err := r.DB.WithContext(ctx).Where("id = ?", id).First(&todo).Error
 	if err != nil {
@@ -40,7 +40,7 @@ func (r SQLTodoRepository) GetById(ctx context.Context, id string) (*domain.Todo
 	return &todo, nil
 }
 
-func (r SQLTodoRepository) GetAll(ctx context.Context) ([]*domain.Todo, error) {
+func (r *SQLTodoRepository) GetAll(ctx context.Context) ([]*domain.Todo, error) {
 	var todos []*domain.Todo
 	err := r.DB.WithContext(ctx).Find(&todos).Error
 	if err != nil {
@@ -49,11 +49,11 @@ func (r SQLTodoRepository) GetAll(ctx context.Context) ([]*domain.Todo, error) {
 	return todos, nil
 }
 
-func (r SQLTodoRepository) Update(ctx context.Context, todo *domain.Todo) error {
+func (r *SQLTodoRepository) Update(ctx context.Context, todo *domain.Todo) error {
 	return r.DB.WithContext(ctx).Save(todo).Error
 }
 
-func (r SQLTodoRepository) Delete(ctx context.Context, id string) error {
+func (r *SQLTodoRepository) Delete(ctx context.Context, id string) error {
 	return r.DB.WithContext(ctx).Where("id = ?", id).Delete(&domain.Todo{}).Error
 }
 
@@ -65,7 +65,7 @@ func NewRedisTodoRepository(client *redis.Client) TodoRepository {
 	return &RedisTodoRepository{Client: client}
 }
 
-func (r RedisTodoRepository) Create(ctx context.Context, todo *domain.Todo) error {
+func (r *RedisTodoRepository) Create(ctx context.Context, todo *domain.Todo) error {
 	todo.UUID = uuid.New().String()
 	todo.CreatedAt = time.Now()
 	todo.UpdatedAt = time.Now()
@@ -79,7 +79,7 @@ func (r RedisTodoRepository) Create(ctx context.Context, todo *domain.Todo) erro
 	return r.Client.Set(ctx, key, jsonData, 0).Err()
 }
 
-func (r RedisTodoRepository) GetById(ctx context.Context, id string) (*domain.Todo, error) {
+func (r *RedisTodoRepository) GetById(ctx context.Context, id string) (*domain.Todo, error) {
 	key := fmt.Sprintf("todo:%s", id)
 	data, err := r.Client.Get(ctx, key).Bytes()
 	if err != nil {
@@ -94,7 +94,7 @@ func (r RedisTodoRepository) GetById(ctx context.Context, id string) (*domain.To
 	return &todo, nil
 }
 
-func (r RedisTodoRepository) GetAll(ctx context.Context) ([]*domain.Todo, error) {
+func (r *RedisTodoRepository) GetAll(ctx context.Context) ([]*domain.Todo, error) {
 	keys, err := r.Client.Keys(ctx, "todos:*").Result()
 	if err != nil {
 		return nil, err
@@ -119,7 +119,7 @@ func (r RedisTodoRepository) GetAll(ctx context.Context) ([]*domain.Todo, error)
 
 }
 
-func (r RedisTodoRepository) Update(ctx context.Context, todo *domain.Todo) error {
+func (r *RedisTodoRepository) Update(ctx context.Context, todo *domain.Todo) error {
 	todo.UpdatedAt = time.Now()
 	jsonData, err := json.Marshal(todo)
 	if err != nil {
@@ -130,7 +130,7 @@ func (r RedisTodoRepository) Update(ctx context.Context, todo *domain.Todo) erro
 	return r.Client.Set(ctx, key, jsonData, 0).Err()
 }
 
-func (r RedisTodoRepository) Delete(ctx context.Context, id string) error {
+func (r *RedisTodoRepository) Delete(ctx context.Context, id string) error {
 	key := fmt.Sprintf("todo:%s", id)
 	return r.Client.HSet(ctx, key, "deleted", "true").Err()
 }
