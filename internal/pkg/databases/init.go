@@ -70,8 +70,8 @@ func init() {
 
 	log.Printf("Connected to %s database successfully", dbType)
 
-	if os.Getenv("APP_ENV") == "development" {
-		MigrateDB(DB, RDB, dbType)
+	if os.Getenv("APP_ENV") == "development" && os.Getenv("DB_TYPE") != "redis" {
+		MigrateDB(DB)
 	}
 
 }
