@@ -8,10 +8,10 @@ import (
 
 type TodoService interface {
 	CreateTodo(ctx context.Context, todo *domain.Todo) error
-	GetTodoByID(ctx context.Context, id string) (*domain.Todo, error)
+	GetTodoByUUID(ctx context.Context, uuid string) (*domain.Todo, error)
 	GetAllTodos(ctx context.Context) ([]*domain.Todo, error)
 	UpdateTodo(ctx context.Context, todo *domain.Todo) error
-	DeleteTodo(ctx context.Context, id string) error
+	DeleteTodo(ctx context.Context, uuid string) error
 }
 
 type todoService struct {
@@ -26,8 +26,8 @@ func (s *todoService) CreateTodo(ctx context.Context, todo *domain.Todo) error {
 	return s.repo.Create(ctx, todo)
 }
 
-func (s *todoService) GetTodoByID(ctx context.Context, id string) (*domain.Todo, error) {
-	return s.repo.GetById(ctx, id)
+func (s *todoService) GetTodoByUUID(ctx context.Context, uuid string) (*domain.Todo, error) {
+	return s.repo.GetByUUID(ctx, uuid)
 }
 
 func (s *todoService) GetAllTodos(ctx context.Context) ([]*domain.Todo, error) {
@@ -38,6 +38,6 @@ func (s *todoService) UpdateTodo(ctx context.Context, todo *domain.Todo) error {
 	return s.repo.Update(ctx, todo)
 }
 
-func (s *todoService) DeleteTodo(ctx context.Context, id string) error {
-	return s.repo.Delete(ctx, id)
+func (s *todoService) DeleteTodo(ctx context.Context, uuid string) error {
+	return s.repo.Delete(ctx, uuid)
 }
